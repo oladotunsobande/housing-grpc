@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package calculator;
+
+message Message {
+  string body = 1;
+}
+
+service CalculatorService {
+  rpc ComputeBreakEven(Message) returns (Message) {}
+}
