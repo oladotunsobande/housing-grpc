@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package calculator;
+
+message LoanDataRequest {
+  double loanAmount = 1;
+  float interestRate = 2;
+  int32 numberOfPayments = 3;
+}
+
+message LoanDataResponse {
+  double repayment = 1;
+}
+
+service CalculatorService {
+  rpc ComputeMonthlyRepayment(LoanDataRequest) returns (LoanDataResponse) {}
+}
