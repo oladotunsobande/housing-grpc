@@ -5,24 +5,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/oladotunsobande/housing-grpc/config"
 	appgrpc "github.com/oladotunsobande/housing-grpc/grpc"
 	"google.golang.org/grpc"
 )
-
-var gRPCClient appgrpc.CalculatorServiceClient
-
-func init() {
-	var conn *grpc.ClientConn
-
-	conn, err := grpc.Dial(":7990", grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Connection to calculator gRPC service failed: %s", err)
-	}
-
-	defer conn.Close()
-
-	gRPCClient = appgrpc.NewCalculatorServiceClient(conn)
-}
 
 // CalculateBreakEven is the gRPC client that calls the calculator service
 func (payload BreakEvenPayload) CalculateBreakEven() (interface{}, error) {
@@ -33,11 +19,20 @@ func (payload BreakEvenPayload) CalculateBreakEven() (interface{}, error) {
 		OccupancyDuration: int32(payload.OccupancyDuration),
 	}
 
+	conn, err := grpc.Dial(fmt.Sprintf(":%s", config.GetSecrets().CalculatorServicePort), grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Connection to calculator gRPC service failed: %s", err)
+	}
+
+	gRPCClient := appgrpc.NewCalculatorServiceClient(conn)
+
 	response, err := gRPCClient.ComputePropertyBreakEven(context.Background(), requestConstruct)
 	if err != nil {
 		fmt.Printf("Error when calling ComputeMonthlyRepayment: %s", err)
 		return nil, err
 	}
+
+	defer conn.Close()
 
 	return response, err
 }
