@@ -2,10 +2,9 @@ package main
 
 import (
 	"context"
-	"log"
 
-	appgrpc "github.com/neocortical/housing-grpc/grpc"
 	housinggrpc "github.com/oladotunsobande/housing-grpc"
+	appgrpc "github.com/oladotunsobande/housing-grpc/grpc"
 )
 
 // calculatorServiceController implements the gRPC CalculatorServiceServer interface.
@@ -21,17 +20,11 @@ func NewCalculatorServiceController(calculatorService housinggrpc.Service) appgr
 }
 
 // ComputeMonthlyRepayment calls the core service's ComputeMonthlyRepayment method and maps the result to a grpc service response.
-func (ctlr *calculatorServiceController) ComputeMonthlyRepayment(ctx context.Context, req *appgrpc.LoanDataRequest) (resp *appgrpc.LoanDataResponse, err error) {
-	resultMap, err := ctlr.calculatorService.ComputeMonthlyRepayment(req.GetIds())
+func (ctlr *calculatorServiceController) ComputeMonthlyRepayment(ctx context.Context, req *appgrpc.LoanDataRequest) (result *appgrpc.LoanDataResponse, err error) {
+	result, err := ctlr.calculatorService.ComputeMonthlyRepayment(req.GetLoanAmount(), req.GetInterestRate(), req.GetNumberOfPayments())
 	if err != nil {
 		return
 	}
 
-	resp = &mysvcgrpc.GetUsersResponse{}
-	for _, u := range resultMap {
-		resp.Users = append(resp.Users, marshalUser(&u))
-	}
-
-	log.Printf("handled GetUsers(%v)\n", req.GetIds())
 	return
 }

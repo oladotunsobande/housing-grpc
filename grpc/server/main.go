@@ -1,30 +1,37 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
+	"os"
 
-	"github.com/oladotunsobande/housing-grpc/src/services/calculator"
+	appcore "github.com/oladotunsobande/housing-grpc/core"
+	appgrpc "github.com/oladotunsobande/housing-grpc/grpc"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 9000))
+	// configure our core service
+	calculatorService := appcore.NewService()
+
+	// configure our gRPC service controller
+	calulatorServiceController := NewCalculatorServiceController(calculatorService)
+
+	// start a gRPC server
+	server := grpc.NewServer()
+	appgrpc.RegisterCalculatorServiceServer(server, calulatorServiceController)
+	reflection.Register(server)
+
+	con, err := net.Listen("tcp", os.Getenv("GRPC_ADDR"))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		panic(err)
 	}
 
-	fmt.Println("gRPC server running...")
-
-	s := calculator.Server{}
-
-	grpcServer := grpc.NewServer()
-
-	calculator.RegisterCalculatorServiceServer(grpcServer, CalculatorServiceServer)
-
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %s", err)
+	log.Printf("Starting gRPC calculator service on %s...\n", con.Addr().String())
+	err = server.Serve(con)
+	if err != nil {
+		panic(err)
 	}
 }

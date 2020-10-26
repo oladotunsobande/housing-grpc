@@ -4,7 +4,7 @@ package calculator;
 
 message LoanDataRequest {
   double loanAmount = 1;
-  float interestRate = 2;
+  double interestRate = 2;
   int32 numberOfPayments = 3;
 }
 

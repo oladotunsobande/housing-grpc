@@ -1,4 +1,4 @@
-package calculator
+package core
 
 import (
 	"math"
@@ -6,19 +6,24 @@ import (
 	housinggrpc "github.com/oladotunsobande/housing-grpc"
 )
 
-// ComputeMonthlyRepayment is the grpc service that computes the monthly loan repayment
-func ComputeMonthlyRepayment(loanAmount float64, interestRate float64, numberOfPayments int64) float64 {
-	payload := &housinggrpc.LoanDetails{
-		LoanAmount:       loanAmount,
-		InterestRate:     interestRate,
-		NumberOfPayments: numberOfPayments,
-	}
+type service struct {
+	data housinggrpc.LoanResponse
+}
 
-	p := payload.LoanAmount
-	r := payload.InterestRate / 100
-	n := payload.NumberOfPayments
+// NewService instantiates a new Service.
+func NewService() housinggrpc.Service {
+	return &service{
+		data: housinggrpc.LoanResponse{},
+	}
+}
+
+// ComputeMonthlyRepayment is the grpc service that computes the monthly loan repayment
+func (s *service) ComputeMonthlyRepayment(loanAmount float64, interestRate float64, numberOfPayments int64) (housinggrpc.LoanResponse, error) {
+	p := loanAmount
+	r := interestRate / 100
+	n := numberOfPayments
 
 	result := p * ((r * (math.Pow((1.00 + r), float64(n)))) / (math.Pow((1.00+r), float64(n)) - 1))
 
-	return result
+	return housinggrpc.LoanResponse{Repayment: result}, nil
 }
