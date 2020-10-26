@@ -19,11 +19,25 @@ func NewCalculatorServiceController(calculatorService housinggrpc.Service) appgr
 	}
 }
 
-// ComputeMonthlyRepayment calls the core service's ComputeMonthlyRepayment method and maps the result to a grpc service response.
-func (ctlr *calculatorServiceController) ComputeMonthlyRepayment(ctx context.Context, req *appgrpc.LoanDataRequest) (result *appgrpc.LoanDataResponse, err error) {
-	result, err := ctlr.calculatorService.ComputeMonthlyRepayment(req.GetLoanAmount(), req.GetInterestRate(), req.GetNumberOfPayments())
+// ComputePropertyBreakEven calls the core service's ComputePropertyBreakEven method and maps the result to a grpc service response.
+func (ctlr *calculatorServiceController) ComputePropertyBreakEven(ctx context.Context, req *appgrpc.BreakEvenRequest) (result *appgrpc.BreakEvenResponse, err error) {
+	payload := housinggrpc.AnalysisRequest{
+		HomeValue:         req.GetHomeValue(),
+		DownPayment:       req.GetDownPayment(),
+		MonthlyRent:       req.GetMonthlyRent(),
+		OccupancyDuration: int(req.GetOccupancyDuration()),
+	}
+
+	res, err := ctlr.calculatorService.ComputePropertyBreakEven(payload)
 	if err != nil {
 		return
+	}
+
+	result = &appgrpc.BreakEvenResponse{
+		Rent:     res.Rent,
+		Purchase: res.Purchase,
+		Message:  res.Message,
+		Verdict:  res.Verdict,
 	}
 
 	return

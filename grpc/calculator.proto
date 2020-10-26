@@ -2,16 +2,20 @@ syntax = "proto3";
 
 package calculator;
 
-message LoanDataRequest {
-  double loanAmount = 1;
-  double interestRate = 2;
-  int32 numberOfPayments = 3;
+message BreakEvenRequest {
+  float homeValue = 1;
+  float downPayment = 2;
+  float monthlyRent = 3;
+  int32 occupancyDuration = 4;
 }
 
-message LoanDataResponse {
-  double repayment = 1;
+message BreakEvenResponse {
+  float rent = 1;
+  float purchase = 2;
+  string message = 3;
+  string verdict = 4;
 }
 
 service CalculatorService {
-  rpc ComputeMonthlyRepayment(LoanDataRequest) returns (LoanDataResponse) {}
+  rpc ComputePropertyBreakEven(BreakEvenRequest) returns (BreakEvenResponse) {}
 }

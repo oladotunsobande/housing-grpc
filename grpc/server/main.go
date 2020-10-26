@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
-	"os"
 
-	appcore "github.com/oladotunsobande/housing-grpc/core"
+	secrets "github.com/oladotunsobande/housing-grpc/config"
+
+	"github.com/oladotunsobande/housing-grpc/core"
 	appgrpc "github.com/oladotunsobande/housing-grpc/grpc"
 
 	"google.golang.org/grpc"
@@ -14,7 +16,7 @@ import (
 
 func main() {
 	// configure our core service
-	calculatorService := appcore.NewService()
+	calculatorService := core.NewService()
 
 	// configure our gRPC service controller
 	calulatorServiceController := NewCalculatorServiceController(calculatorService)
@@ -24,12 +26,12 @@ func main() {
 	appgrpc.RegisterCalculatorServiceServer(server, calulatorServiceController)
 	reflection.Register(server)
 
-	con, err := net.Listen("tcp", os.Getenv("GRPC_ADDR"))
+	con, err := net.Listen("tcp", fmt.Sprintf(":%s", secrets.GetSecrets().CalculatorServicePort))
 	if err != nil {
 		panic(err)
 	}
 
-	log.Printf("Starting gRPC calculator service on %s...\n", con.Addr().String())
+	log.Printf("Calculator gRPC service running on %s...\n", con.Addr().String())
 	err = server.Serve(con)
 	if err != nil {
 		panic(err)

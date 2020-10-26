@@ -17,7 +17,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CalculatorServiceClient interface {
-	ComputeMonthlyRepayment(ctx context.Context, in *LoanDataRequest, opts ...grpc.CallOption) (*LoanDataResponse, error)
+	ComputePropertyBreakEven(ctx context.Context, in *BreakEvenRequest, opts ...grpc.CallOption) (*BreakEvenResponse, error)
 }
 
 type calculatorServiceClient struct {
@@ -28,9 +28,9 @@ func NewCalculatorServiceClient(cc grpc.ClientConnInterface) CalculatorServiceCl
 	return &calculatorServiceClient{cc}
 }
 
-func (c *calculatorServiceClient) ComputeMonthlyRepayment(ctx context.Context, in *LoanDataRequest, opts ...grpc.CallOption) (*LoanDataResponse, error) {
-	out := new(LoanDataResponse)
-	err := c.cc.Invoke(ctx, "/calculator.CalculatorService/ComputeMonthlyRepayment", in, out, opts...)
+func (c *calculatorServiceClient) ComputePropertyBreakEven(ctx context.Context, in *BreakEvenRequest, opts ...grpc.CallOption) (*BreakEvenResponse, error) {
+	out := new(BreakEvenResponse)
+	err := c.cc.Invoke(ctx, "/calculator.CalculatorService/ComputePropertyBreakEven", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -38,21 +38,19 @@ func (c *calculatorServiceClient) ComputeMonthlyRepayment(ctx context.Context, i
 }
 
 // CalculatorServiceServer is the server API for CalculatorService service.
-// All implementations must embed UnimplementedCalculatorServiceServer
+// All implementations should embed UnimplementedCalculatorServiceServer
 // for forward compatibility
 type CalculatorServiceServer interface {
-	ComputeMonthlyRepayment(context.Context, *LoanDataRequest) (*LoanDataResponse, error)
-	mustEmbedUnimplementedCalculatorServiceServer()
+	ComputePropertyBreakEven(context.Context, *BreakEvenRequest) (*BreakEvenResponse, error)
 }
 
-// UnimplementedCalculatorServiceServer must be embedded to have forward compatible implementations.
+// UnimplementedCalculatorServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedCalculatorServiceServer struct {
 }
 
-func (UnimplementedCalculatorServiceServer) ComputeMonthlyRepayment(context.Context, *LoanDataRequest) (*LoanDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ComputeMonthlyRepayment not implemented")
+func (UnimplementedCalculatorServiceServer) ComputePropertyBreakEven(context.Context, *BreakEvenRequest) (*BreakEvenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ComputePropertyBreakEven not implemented")
 }
-func (UnimplementedCalculatorServiceServer) mustEmbedUnimplementedCalculatorServiceServer() {}
 
 // UnsafeCalculatorServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to CalculatorServiceServer will
@@ -65,20 +63,20 @@ func RegisterCalculatorServiceServer(s grpc.ServiceRegistrar, srv CalculatorServ
 	s.RegisterService(&_CalculatorService_serviceDesc, srv)
 }
 
-func _CalculatorService_ComputeMonthlyRepayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoanDataRequest)
+func _CalculatorService_ComputePropertyBreakEven_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BreakEvenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CalculatorServiceServer).ComputeMonthlyRepayment(ctx, in)
+		return srv.(CalculatorServiceServer).ComputePropertyBreakEven(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/calculator.CalculatorService/ComputeMonthlyRepayment",
+		FullMethod: "/calculator.CalculatorService/ComputePropertyBreakEven",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CalculatorServiceServer).ComputeMonthlyRepayment(ctx, req.(*LoanDataRequest))
+		return srv.(CalculatorServiceServer).ComputePropertyBreakEven(ctx, req.(*BreakEvenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -88,8 +86,8 @@ var _CalculatorService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*CalculatorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ComputeMonthlyRepayment",
-			Handler:    _CalculatorService_ComputeMonthlyRepayment_Handler,
+			MethodName: "ComputePropertyBreakEven",
+			Handler:    _CalculatorService_ComputePropertyBreakEven_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
