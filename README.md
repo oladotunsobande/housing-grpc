@@ -1,10 +1,12 @@
 # Housing gRPC
 
-This is a gRPC microservice that performs Break-Even analysis
+This is a gRPC microservice that performs Break-Even analysis.
 
 ## Estimation Parameters
 
 For the purpose of this example, we will store our estimation parameters as environment variables.
+You can add a data layer for persisting and querying these parameters from a database.
+
 You can set your preferred values here. All environment variables are store in the `.env.sample` file.
 
 NOTE: Ensure you created a `.env` file in the root directory and add these variables to the file
