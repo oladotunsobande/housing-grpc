@@ -25,6 +25,7 @@ type LoanDetails struct {
 	NumberOfPayments int32
 }
 
+// AnalysisVariables defines the estimation parameters object
 type AnalysisVariables struct {
 	HomeValue                         float32
 	DownPayment                       float32
@@ -36,6 +37,7 @@ type AnalysisVariables struct {
 	LoanInterestRate                  float32
 	AnnualRentIncreaseRate            float32
 	PropertyTax                       float32
+	PropertyTransferTax               float32
 	MaintenanceRate                   float32
 	UtilityRate                       float32
 	HomeOwnerAssociationRate          float32
@@ -44,6 +46,7 @@ type AnalysisVariables struct {
 	SecurityDeposit                   float32
 }
 
+// Expense defines the annual and cummlative expense object
 type Expense struct {
 	Annual      float32
 	Cummulative float32
@@ -70,6 +73,7 @@ func convertFloat(val string) float32 {
 	return result
 }
 
+// initVariables initializes the estimation parameters. This would be replaced by reading these parameters from a database
 func initVariables(payload housinggrpc.AnalysisRequest) (analysisVariables AnalysisVariables, err error) {
 	details := LoanDetails{
 		LoanAmount:       payload.HomeValue - ((payload.DownPayment / 100) * payload.HomeValue),
@@ -93,8 +97,9 @@ func initVariables(payload housinggrpc.AnalysisRequest) (analysisVariables Analy
 		LoanInterestRate:                  convertFloat(secrets.GetSecrets().LoanInterestRate) / 100,
 		AnnualRentIncreaseRate:            convertFloat(secrets.GetSecrets().AnnualRentIncreaseRate) / 100,
 		PropertyTax:                       convertFloat(secrets.GetSecrets().PropertyTax) / 100,
+		PropertyTransferTax:               convertFloat(secrets.GetSecrets().PropertyTransferTax) / 100,
 		MaintenanceRate:                   convertFloat(secrets.GetSecrets().MaintenanceRate) / 100,
-		UtilityRate:                       convertFloat(secrets.GetSecrets().UtilityRate) / 100,
+		UtilityRate:                       (convertFloat(secrets.GetSecrets().UtilityRate) / 100) * 12,
 		HomeOwnerAssociationRate:          convertFloat(secrets.GetSecrets().HomeOwnerAssociationRate) / 100,
 		HomeOwnerAssociationInsuranceRate: convertFloat(secrets.GetSecrets().HomeOwnerAssociationInsuranceRate) / 100,
 		AnnualRepayment:                   monthRepayment * 12,
@@ -217,14 +222,15 @@ func (_var AnalysisVariables) computePurchaseExpense(year int, propertyValue flo
 
 	if year == 0 {
 		expenses = append(expenses, _var.DownPayment)
-		expenses = append(expenses, _var.ClosingCost*_var.HomeValue)
-		expenses = append(expenses, _var.RealtorFees*_var.HomeValue)
+		expenses = append(expenses, _var.ClosingCost*propertyValue)
+		expenses = append(expenses, _var.RealtorFees*propertyValue)
+		expenses = append(expenses, _var.PropertyTransferTax*propertyValue)
 	} else {
 		expenses = append(expenses, _var.AnnualRepayment)
 		expenses = append(expenses, _var.HomeOwnerAssociationRate*propertyValue)
 		expenses = append(expenses, _var.HomeOwnerAssociationInsuranceRate*propertyValue)
 		expenses = append(expenses, _var.MaintenanceRate*propertyValue)
-		expenses = append(expenses, _var.UtilityRate*propertyValue*12)
+		expenses = append(expenses, _var.UtilityRate*propertyValue)
 		expenses = append(expenses, _var.PropertyTax*propertyValue)
 	}
 

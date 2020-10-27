@@ -23,6 +23,7 @@ type Secrets struct {
 	LoanInterestRate                  string
 	AnnualRentIncreaseRate            string
 	PropertyTax                       string
+	PropertyTransferTax               string
 	MaintenanceRate                   string
 	UtilityRate                       string
 	HomeOwnerAssociationRate          string
@@ -58,6 +59,7 @@ func GetSecrets() Secrets {
 	secrets.LoanInterestRate = os.Getenv("LOAN_INTEREST_RATE")
 	secrets.AnnualRentIncreaseRate = os.Getenv("ANNUAL_RENT_INCREASE_RATE")
 	secrets.PropertyTax = os.Getenv("PROPERTY_TAX")
+	secrets.PropertyTransferTax = os.Getenv("PROPERTY_TRANSFER_TAX")
 	secrets.MaintenanceRate = os.Getenv("MAINTENANCE_RATE")
 	secrets.UtilityRate = os.Getenv("UTILITIES_RATE")
 	secrets.HomeOwnerAssociationRate = os.Getenv("HOME_OWNER_ASSOCIATION_RATE")
