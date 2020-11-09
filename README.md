@@ -37,6 +37,12 @@ APP_PORT=8080
 CALCULATOR_SERVICE_PORT=7990
 ```
 
+To generate Go specific gRPC code run the following command in the `grpc` directory:
+
+```
+$ protoc --go_out=. --go-grpc_out=require_unimplemented_servers=false:. *.proto
+```
+
 ## Run gRPC service and REST API gateway
 
 To run the calculator gRPC service:
